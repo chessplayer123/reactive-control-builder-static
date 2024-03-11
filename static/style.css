@@ -1,3 +1,32 @@
-h1 {
-    color: cadetblue;
+html {
+    position: relative;
+    min-height: 100%;
+}
+
+body {
+    margin-bottom: 20px;
+}
+
+header,
+footer {
+    background-color: #343a40;
+    color: #fff;
+}
+
+footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 60px;
+    line-height: 60px;
+    text-align: center;
+}
+
+.navbar-brand,
+.nav-link {
+    color: #fff;
+}
+
+.navbar-nav .nav-item {
+    margin-left: 10px;
 }
