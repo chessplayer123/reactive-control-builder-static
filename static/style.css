@@ -30,3 +30,43 @@ footer {
 .navbar-nav .nav-item {
     margin-left: 10px;
 }
+
+.base-node {
+    border: 1px solid red;
+    padding: 10px;
+    margin: 5px;
+    display: flex;
+    flex-direction: column;
+}
+
+.node {
+    border: 1px solid red;
+    /* padding: 10px; */
+    margin: 10px;
+}
+
+.node-childs {
+    /* display: flex;
+    flex-wrap: wrap; */
+}
+
+.node-input {
+    padding: 10px;
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.node-input input {
+    width: 350px;
+}
+
+.buttons {
+    display: flex;
+    gap: 5px;
+}
+
+.card {
+    transition: box-shadow 0.3s ease;
+}
