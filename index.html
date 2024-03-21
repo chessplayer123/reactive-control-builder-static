@@ -50,21 +50,19 @@
 
         <section class="mt-5" id="input">
             <h2> Ввод данных: </h2>
-            <div id="level_0_0" class="base-node card border-success">
-                <div class="node-input">
-                    <input type="text" class="cate_0_0 form-control" placeholder="Название этого уровня">
-                    <div class="buttons">
-                        <button class="btn btn-primary" onclick="addLevel(this)" data-level-tree="0_0" data-level="0">Добавить элемент на этот уровень</button>
+            <div class="input-tree">
+                <div id="level-0" class="base-node card">
+                    <div class="node-input">
+
                     </div>
                 </div>
-                <div class="node-childs">
-
-                </div>
+                <div id="tree" class="border rounded"></div>
             </div>
         </section>
 
         <section class="mt-5" id="output">
             <h2> Результат: </h2>
+            
         </section>
     </div>
 
@@ -75,6 +73,7 @@
     </footer>
 
     <script src="./js/builder.js"></script>
+    <script src="./js/index.js"></script>
     <script src="./js/input.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="https://unpkg.com/@popperjs/core@2"></script>

@@ -37,6 +37,7 @@ footer {
     margin: 5px;
     display: flex;
     flex-direction: column;
+    width: 50%;
 }
 
 .node {
@@ -59,7 +60,7 @@ footer {
 }
 
 .node-input input {
-    width: 350px;
+    width: 300px;
 }
 
 .buttons {
@@ -69,4 +70,16 @@ footer {
 
 .card {
     transition: box-shadow 0.3s ease;
+}
+
+.input-tree {
+    display: flex;
+    flex-direction: row;
+    /* flex-wrap: wrap; */
+}
+
+#tree {
+    margin: 5px;
+    width: 50%;
+    min-height: 600px;
 }
