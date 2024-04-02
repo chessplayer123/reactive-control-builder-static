@@ -50,11 +50,6 @@ footer {
     margin: 10px;
 }
 
-.node-childs {
-    /* display: flex;
-    flex-wrap: wrap; */
-}
-
 .node-input {
     padding: 10px;
     display: flex;

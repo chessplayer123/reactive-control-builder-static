@@ -3,7 +3,7 @@ let data = [{
     text_1: "Root",
     father: null,
     selected: true,
-    subselected: false, 
+    subselected: false,
 }];
 
 let currentMaxID = 1;
@@ -25,6 +25,8 @@ let myTree = Treeviz.create({
     linkShape: "curve",
     linkColor: (nodeData) => "#B0BEC5",
 });
+
+const notification = document.getElementById('notification')
 
 function getNodeElement(node) {
     const styleString = `
@@ -91,7 +93,7 @@ function onNodeClick(node) {
 }
 
 function updateEditorById(id) {
-    if (id == null) return; 
+    if (id == null) return;
 
     let container = document.querySelector('#level-0');
     container.innerHTML = "";
@@ -221,6 +223,77 @@ function deleteLevel(id) {
     let parentId = getElementById(id).father;
     deleteById(data, id);
     updateEditorById(parentId);
+}
+
+function getCurrentTimeString() {
+    const currentDate = new Date();
+    const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+    const day = String(currentDate.getDate()).padStart(2, '0');
+    const hours = String(currentDate.getHours()).padStart(2, '0');
+    const minutes = String(currentDate.getMinutes()).padStart(2, '0');
+
+    return `${month}${day}_${hours}${minutes}`;
+}
+
+function download() {
+    let jsonText = JSON.stringify(data);
+    let a = document.createElement("a");
+    let file = new Blob([jsonText], {
+        type: "text/plain"
+    });
+    a.href = URL.createObjectURL(file);
+    a.download = "rcb_save_" + getCurrentTimeString() + ".json";
+    a.click();
+    URL.revokeObjectURL(a.href)
+}
+
+function findMaxId(data) {
+    let maxId = -Infinity;
+    for (let i = 0; i < data.length; i++) {
+        if (data[i].id > maxId) {
+            maxId = data[i].id;
+        }
+    }
+    return maxId;
+}
+
+function restoreSave() {
+    const input = document.getElementById('fileInput');
+    input.accept = '.json';
+    input.onchange = function (e) {
+        const file = e.target.files[0];
+        const reader = new FileReader();
+        reader.readAsText(file, 'UTF-8');
+        reader.onload = function (readerEvent) {
+            try {
+                data = JSON.parse(readerEvent.target.result);
+                currentMaxID = findMaxId(data) + 1;
+                // does not catch error if data is corrupted, treeviz.refresh is asyc
+                updateEditorById("1");
+                showSuccessNotification("Сохранение востановленно");
+            } catch (error) {
+                console.error('Error parsing JSON:', error);
+                showErrorNotification("Не удалось востановить сохранение: " + error);
+            }
+        };
+    };
+    input.click();
+}
+
+function showSuccessNotification(text) {
+    const alert = bootstrap.Toast.getOrCreateInstance(notification);
+    alert._element.querySelector('.toast-body').innerHTML = text;
+    alert._element.classList.remove('text-bg-danger');
+    alert._element.classList.add('text-bg-success');
+    alert.show();
+}
+
+function showErrorNotification(text) {
+    const alert = bootstrap.Toast.getOrCreateInstance(notification);
+    alert._element.querySelector('.toast-body').innerHTML = text;
+    alert._element.classList.remove('text-bg-success');
+    alert._element.classList.add('text-bg-danger');
+    alert.show();
 }
 
 updateEditorById(1);
