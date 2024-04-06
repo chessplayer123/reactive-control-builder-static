@@ -1,35 +1,28 @@
 fabric.Object.prototype.lockRotation = true;
 
-let cfg = {
-    top: {
-        width: 100,
-        height: 33,
-        outerArrowsWidth: 50,
-    },
-    bottom: {
-        width: 90,
-        height: 16,
-    },
-    arrow: {
-        thickness: 90*0.08,
-        bodyRatio: 0.75,
-    },
-    description: {
-        width: 200,
-    },
-    image: {
-        maxNodesOnSameLine: 2,
-        vSpacing: 50,
-        hSpacing: 50,
-        leftMargin: 10,
-        rightMargin: 10,
-    },
-    font: "arial",
-    abc: "ijklmnoprstqwe"
-};
+let cfg = loadDefaultConfig();
 
-function loadConfig() {
-    cfg.top.width = 150;
+function loadDefaultConfig() {
+    let cfg = {
+        top: {
+            width: 150,
+        },
+        arrow: {
+            thickness: 90*0.08,
+            bodyRatio: 0.75,
+        },
+        description: {
+            width: 200,
+        },
+        image: {
+            maxNodesOnSameLine: 2,
+            vSpacing: 50,
+            hSpacing: 50,
+            leftMargin: 10,
+            rightMargin: 10,
+        },
+        abc: "ijklmnoprstqwe"
+    };
     cfg.top.height = cfg.top.width * 0.4;
     cfg.bottom = {
         width: cfg.top.width * 0.9,
@@ -40,7 +33,6 @@ function loadConfig() {
 
     return cfg;
 }
-loadConfig();
 
 class Builder {
     constructor(canvasId, data) {
