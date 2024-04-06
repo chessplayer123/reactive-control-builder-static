@@ -270,7 +270,7 @@ function getCurrentTimeString() {
 }
 
 function download() {
-    let jsonText = JSON.stringify(data);
+    let jsonText = JSON.stringify([...data]);
     let a = document.createElement("a");
     let file = new Blob([jsonText], {
         type: "text/plain"
@@ -283,9 +283,9 @@ function download() {
 
 function findMaxId(data) {
     let maxId = -Infinity;
-    for (let i = 0; i < data.length; i++) {
-        if (data[i].id > maxId) {
-            maxId = data[i].id;
+    for (let node of data.values()) {
+        if (node.id > maxId) {
+            maxId = node.id;
         }
     }
     return maxId;
@@ -300,7 +300,7 @@ function restoreSave() {
         reader.readAsText(file, 'UTF-8');
         reader.onload = function (readerEvent) {
             try {
-                data = JSON.parse(readerEvent.target.result);
+                data = new Map(JSON.parse(readerEvent.target.result));
                 currentMaxID = findMaxId(data) + 1;
                 // does not catch error if data is corrupted, treeviz.refresh is asyc
                 updateEditorById(1);
