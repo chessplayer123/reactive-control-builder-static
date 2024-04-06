@@ -90,6 +90,7 @@ function onNodeClick(node) {
     container.innerHTML = "";
     container.appendChild(drawLevel(id));
     selectById(id);
+    build();
 }
 
 function updateEditorById(id) {
@@ -99,6 +100,7 @@ function updateEditorById(id) {
     container.innerHTML = "";
     container.appendChild(drawLevel(id));
     selectById(id);
+    build();
 }
 
 function getBorderClass(level) {
@@ -142,6 +144,7 @@ function createNode(node, borderLevel) {
         node.text_1 = event.target.value;
         cardHeader.textContent = event.target.value;
         myTree.refresh(data);
+        build();
     });
     newNodeInput.appendChild(newInput);
 
