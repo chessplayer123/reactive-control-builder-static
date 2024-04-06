@@ -15,8 +15,7 @@ let cfg = {
         bodyRatio: 0.75,
     },
     description: {
-        width: 100,
-        height: 16,
+        width: 200,
     },
     image: {
         maxNodesOnSameLine: 2,
@@ -26,7 +25,6 @@ let cfg = {
         rightMargin: 10,
     },
     font: "arial",
-    outlineColor: "black",
     abc: "ijklmnoprstqwe"
 };
 
@@ -39,16 +37,10 @@ function loadConfig() {
     }
     cfg.top.outerArrowsWidth = (cfg.top.height + cfg.bottom.height) * 0.5
     cfg.arrow.thickness = cfg.bottom.width * 0.08;
-    cfg.description.height = cfg.bottom.height
 
     return cfg;
 }
-
-function build() {
-    loadConfig();
-    let builder = new Builder("canvas", data);
-    builder.draw(data.values().find((e) => e.selected).id);
-}
+loadConfig();
 
 class Builder {
     constructor(canvasId, data) {
@@ -93,18 +85,8 @@ class Builder {
     }
 
     newDescriptionSection(vertLineX, horLineY, node) {
-        const outerIndex = (node.isRoot() ? "P" : "u") + cfg.abc.charAt(Math.max(0, node.depth-1)) + node.globalIndex;
-        // Horizontal delimiter
-        const horLine = new fabric.Line([
-            vertLineX - cfg.top.outerArrowsWidth, horLineY,
-            vertLineX + cfg.description.width, horLineY
-        ], {stroke: "black"});
-
-        // Vertical delimiter
-        const vertLine = new fabric.Line([
-            vertLineX, horLineY - cfg.top.height,
-            vertLineX, horLineY + cfg.bottom.height
-        ], {stroke: "black"});
+        const globalIndex = cfg.abc.charAt(Math.max(0, node.depth-1)) + this.getGlobalIndex(node);
+        const outerIndex = (node.father == null ? "P" : "u") + globalIndex;
 
         // Top section
         const nameSection = new fabric.Textbox(`${outerIndex}\n${node.text_1}`, {
@@ -118,27 +100,44 @@ class Builder {
 
         // Bottom section
         let children = []
-        for (let i = 1; i <= node.childrenCount; ++i) {
-            children.push(`u${node.globalIndex}${i}`);
+        let i = 1;
+        for (const child of node.children) {
+            children.push(`u${globalIndex}${i++}` + (this.tree.get(child).children.size == 0 ? '-' : '+'));
         }
         const childrenSection = new fabric.Textbox(children.join("\n"), {
             left: vertLineX+1, top: horLineY,
             stroke: "black", strokeWidth: 0,
-            fontSize: cfg.top.height * 0.2,
+            fontSize: cfg.top.height * 0.3,
             width: cfg.description.width,
         });
+        let len = 0;
+        for (let i = 0; i < node.children.size; ++i) {
+            childrenSection.setSubscript(len+1, len+children[i].length - 1);
+            len += children[i].length + 1;
+        }
+
+        // Vertical delimiter
+        const vertLine = new fabric.Line([
+            vertLineX, horLineY - cfg.top.height,
+            vertLineX, horLineY + Math.max(childrenSection.height, cfg.bottom.height)
+        ], {stroke: "black"});
+        // Horizontal delimiter
+        const horLine = new fabric.Line([
+            vertLineX - cfg.top.outerArrowsWidth, horLineY,
+            vertLineX + nameSection.width, horLineY
+        ], {stroke: "black"});
 
         return new fabric.Group([horLine, vertLine, nameSection, childrenSection]);
     }
 
     newSubjectNode(node) {
-        const index = cfg.abc.charAt(node.depth-1) + node.globalIndex;
+        const index = cfg.abc.charAt(node.depth-1) + this.getGlobalIndex(node);
         return new fabric.Group([
             this.newBottomRect(0, 0, index, "yellow"),
             newText(
                 `u${index} ${node.text_1}`,
                 {x: cfg.bottom.width * 0.5, origin: "center"},
-                {y: cfg.bottom.height,       origin: "top"},
+                {y: cfg.bottom.height,      origin: "top"},
                 cfg.bottom.height*0.35, cfg.bottom.width - 4 * cfg.arrow.thickness,
                 1, 1 + index.length
             )], {
@@ -154,7 +153,7 @@ class Builder {
             width: cfg.top.width, height: cfg.top.height,
             fill: "yellow", stroke: "black"
         });
-        const innerIndex = cfg.abc.charAt(node.depth) + node.globalIndex;
+        const innerIndex = cfg.abc.charAt(node.depth) + this.getGlobalIndex(node);
         // Outer arrows ->[]->
         const inArrow = newHorizontalArrow(
             topRect.height * 0.5,
@@ -228,7 +227,7 @@ class Builder {
             y: src.top+cfg.top.height*0.5
         };
         const srcOutPoint = {
-            x: src.left+cfg.top.outerArrowsWidth+cfg.top.width-cfg.arrow.thickness*1.5,
+            x: src.left+cfg.top.outerArrowsWidth+(cfg.top.width+cfg.bottom.width)/2-cfg.arrow.thickness*1.5,
             y: src.top+cfg.top.height*0.5
         };
         let dstInPoint = this.getInCoords(dst);
@@ -267,7 +266,7 @@ class Builder {
         this.canvas.setWidth(Math.max(
             width,
             cfg.image.leftMargin +
-                cfg.image.hSpacing * (cfg.image.maxNodesOnSameLine - 1) +
+                cfg.image.hSpacing * (Math.min(cfg.image.maxNodesOnSameLine, subjects.length) - 1) +
                 columnsWidth.reduce((a, b) => a + b) +
                 cfg.image.rightMargin
         ));
@@ -297,9 +296,20 @@ class Builder {
         }
     }
 
+    getGlobalIndex(currentNode) {
+        if (currentNode.father == null) {
+            return "";
+        }
+        const parentGlobalIndex = this.getGlobalIndex(this.tree.get(currentNode.father));
+        return `${parentGlobalIndex}${currentNode.index}`;
+    }
+
     draw(rootId) {
+        this.canvas.clear();
+
+        console.log(rootId, this.tree)
         const rootNode = this.tree.get(rootId);
-        if (rootNode.isLeaf()) {
+        if (rootNode.children.size == 0) {
             const subject = this.newSubjectNode(rootNode);
             subject.setPositionByOrigin({x: 0, y: 0}, "left", "top");
             this.canvas.add(subject);
@@ -312,7 +322,7 @@ class Builder {
         const subjects = Array.from(this.tree
             .values()
             .filter((node) => node.father == rootId)
-        , (child) => (child.isLeaf() ? this.newSubjectNode(child) : this.newObjectNode(child)));
+        , (child) => (child.children.size == 0 ? this.newSubjectNode(child) : this.newObjectNode(child)));
         const columns = this.resizeCanvasToFit(rootObject, subjects);
 
         rootObject.setPositionByOrigin(
@@ -333,6 +343,6 @@ document.addEventListener('DOMContentLoaded', function() {
         cfg.image.rightMargin = parseInt(document.getElementById('rightMargin').value);
 
         showSuccessNotification("Настройки применены");
-        build();
+        builder.draw(getCurrentSelected());
     });
 });

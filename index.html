@@ -55,6 +55,10 @@
                     <button type="button" class="btn btn-success" onclick="download()">Сохранить </button>
                     <input type="file" id="fileInput" style="display: none;">
                     <button type="button" class="btn btn-warning" onclick="restoreSave()">Загрузить сохранение</button>
+                    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modal">
+                        <i class="fa-solid fa-gear" style="margin-right: 10px;"></i>Настройки
+                    </button>
+                    <button type="button" class="btn btn-success" onclick="loadAll()">Скачать изображения</button>
                 </div>
                 <div class="input-tree">
                     <div id="level-0" class="base-node card">
@@ -66,15 +70,11 @@
                 </div>
             </section>
 
-            <section class="mt-5 mb-5" id="output">
-                <h2> Результат: </h2>
-                <div class="px-1">
-                    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modal">
-                        <i class="fa-solid fa-gear" style="margin-right: 10px;"></i>Настройки
-                    </button>
-                </div>
-                <div class="d-flex justify-content-center" id="canvas-container">
-                    <canvas id="canvas"></canvas>
+            <section class="px-1 mt-1 mb-5" id="output">
+                <div class="d-flex justify-content-center card" id="canvas-container">
+                    <div class="d-flex justify-content-center">
+                        <canvas id="canvas"></canvas>
+                    </div>
                 </div>
             </section>
         </div>
@@ -150,7 +150,6 @@
     <script src="https://kit.fontawesome.com/7f94d3e3f8.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/fabric"></script>
     <script src="./js/builder/builder.js"></script>
-    <script src="./js/builder/tree.js"></script>
     <script src="./js/builder/utils.js"></script>
     <script src="./js/index.js"></script>
     <script src="./js/input.js"></script>

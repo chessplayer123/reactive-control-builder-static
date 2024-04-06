@@ -1,22 +1,17 @@
-let data = new Map();
+let data = new Map([
+    [1, {
+        id: 1,
+        text_1: "Root",
+        father: null,
+        selected: true,
+        subselected: false,
+        index: 0,
+        depth: 0,
+        children: new Set()
+    }]
+]);
 
-data.set(1, {
-    id: 1,
-    text_1: "Root",
-    father: null,
-    selected: true,
-    subselected: false,
-    depth: 0,
-    localIndex: null,
-    globalIndex: "",
-    childrenCount: 0,
-    isRoot: function () {
-        return this.father == null;
-    },
-    isLeaf: function () {
-        return this.childrenCount == 0;
-    }
-});
+const builder = new Builder("canvas", data);
 
 let currentMaxID = 1;
 
@@ -39,6 +34,25 @@ let myTree = Treeviz.create({
 });
 
 const notification = document.getElementById('notification')
+
+function getCurrentSelected() {
+    return data.values().find((e) => e.selected).id;
+}
+
+function loadAll() {
+    const currentTime = getCurrentTimeString();
+    for (const [id, node] of data.entries()) {
+        if (node.children.size == 0) continue;
+
+        builder.draw(id);
+        const link = document.createElement('a');
+        link.download = `rcd_${currentTime}_${node.text_1}.png`;
+        builder.canvas.renderAll();
+        link.href = builder.canvas.toDataURL({format: "png"});
+        link.click();
+        URL.revokeObjectURL(link.href)
+    }
+}
 
 function getNodeElement(node) {
     const styleString = `
@@ -78,22 +92,10 @@ function getNodeElement(node) {
 
 function selectById(id) {
     for (const node of data.values()) {
-        if (node.id == id) {
-            node.selected = true;
-        } else {
-            node.selected = false;
-        }
-        if (node.father == id) {
-            node.subselected = true;
-        } else {
-            node.subselected = false;
-        }
+        node.selected = (node.id == id);
+        node.subselected = (node.father == id);
     }
     myTree.refresh(data.values());
-}
-
-function getElementById(id) {
-    return data.get(id);
 }
 
 function onNodeClick(node) {
@@ -102,7 +104,7 @@ function onNodeClick(node) {
     container.innerHTML = "";
     container.appendChild(drawLevel(parseInt(id)));
     selectById(id);
-    build();
+    builder.draw(getCurrentSelected());
 }
 
 function updateEditorById(id) {
@@ -112,7 +114,7 @@ function updateEditorById(id) {
     container.innerHTML = "";
     container.appendChild(drawLevel(id));
     selectById(id);
-    build();
+    builder.draw(getCurrentSelected());
 }
 
 function getBorderClass(level) {
@@ -156,7 +158,7 @@ function createNode(node, borderLevel) {
         node.text_1 = event.target.value;
         cardHeader.textContent = event.target.value;
         myTree.refresh(data.values());
-        build();
+        builder.draw(getCurrentSelected());
     });
     newNodeInput.appendChild(newInput);
 
@@ -206,32 +208,24 @@ function createNode(node, borderLevel) {
 }
 
 function addLevel(parentId) {
-    let parent = getElementById(parentId);
+    let parent = data.get(parentId);
     data.set(++currentMaxID, {
         id: currentMaxID,
         text_1: "No name",
         father: parentId,
         depth: parent.depth + 1,
-        localIndex: ++parent.childrenCount,
-        globalIndex: `${parent.globalIndex}${parent.childrenCount}`,
-        childrenCount: 0,
-        isRoot: function () {
-            return this.father == null;
-        },
-        isLeaf: function () {
-            return this.childrenCount == 0;
-        }
+        children: new Set(),
+        index: parent.children.add(currentMaxID).size,
     });
     myTree.refresh(data.values());
     updateEditorById(parentId);
 }
 
-function deleteById(data, id) {
-
+function deleteById(id) {
     const element = data.get(id);
     for (let child of data.values()) {
         if (child.father == id) {
-            deleteById(data, child.id);
+            deleteById(child.id);
         }
     }
     data.delete(id);
@@ -243,19 +237,15 @@ function deleteLevel(id) {
         return
     }
     
-    
-    let current = getElementById(id);
-    let parent = getElementById(current.father);
-    --parent.childrenCount;
-    for (let [id, node] of data.entries()) {
-        console.log(node.father, node.localIndex)
-        if (node.father == current.father && node.localIndex >= current.localIndex) {
-            --node.localIndex;
+    let current = data.get(id);
+    let parent = data.get(current.father);
+    parent.children.delete(id);
+    for (let node of data.values()) {
+        if (node.father == current.father && node.index >= current.index) {
+            --node.index;
         }
-        console.log(node.father, node.localIndex)
     };
-    console.log(data)
-    deleteById(data, id);
+    deleteById(id);
     updateEditorById(parent.id);
 }
 
@@ -300,7 +290,11 @@ function restoreSave() {
         reader.readAsText(file, 'UTF-8');
         reader.onload = function (readerEvent) {
             try {
-                data = new Map(JSON.parse(readerEvent.target.result));
+                data.clear();
+                const loadedData = new Map(JSON.parse(readerEvent.target.result));
+                for (const [key, value] of loadedData) {
+                    data.set(key, value);
+                }
                 currentMaxID = findMaxId(data) + 1;
                 // does not catch error if data is corrupted, treeviz.refresh is asyc
                 updateEditorById(1);
@@ -310,6 +304,7 @@ function restoreSave() {
                 showErrorNotification("Не удалось востановить сохранение: " + error);
             }
         };
+        e.target.value = ""
     };
     input.click();
 }
