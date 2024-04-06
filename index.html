@@ -66,15 +66,66 @@
                 </div>
             </section>
 
-            <section class="mt-5" id="output">
+            <section class="mt-5 mb-5" id="output">
                 <h2> Результат: </h2>
-                <canvas id="canvas"></canvas>
+                <div class="px-1">
+                    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modal">
+                        <i class="fa-solid fa-gear" style="margin-right: 10px;"></i>Настройки
+                    </button>
+                </div>
+                <div class="d-flex justify-content-center" id="canvas-container">
+                    <canvas id="canvas"></canvas>
+                </div>
             </section>
         </div>
     </main>
 
-    <div id="notification" class="toast align-items-center text-bg-success border-0 position-fixed top-0 end-0 m-2" role="alert"
-        aria-live="polite" aria-atomic="true">
+    <div class="modal fade" id="modal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="modalLabel">Настройки Расположения Узлов</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group mb-4">
+                            <label for="maxNodesOnSameLine">Макс. количество элементов на одной строке:</label>
+                            <input type="number" class="form-control" id="maxNodesOnSameLine" value="2">
+                        </div>
+                        <div class="form-row mb-4">
+                            <div class="col">
+                                <label for="vSpacing">Вертикальный промежуток между элементами:</label>
+                                <input type="number" class="form-control" id="vSpacing" value="50">
+                            </div>
+                            <div class="col">
+                                <label for="hSpacing">Горизонтальный промежуток между элементами:</label>
+                                <input type="number" class="form-control" id="hSpacing" value="50">
+                            </div>
+                        </div>
+                        <div class="form-row mb-4">
+                            <div class="col">
+                                <label for="leftMargin">Левый отступ от границы изображения:</label>
+                                <input type="number" class="form-control" id="leftMargin" value="10">
+                            </div>
+                            <div class="col">
+                                <label for="rightMargin">Правый отступ от границы изображения:</label>
+                                <input type="number" class="form-control" id="rightMargin" value="10">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="applyChangesBtn">Сохранить
+                        изменения</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="notification" class="toast align-items-center text-bg-success border-0 position-fixed top-0 end-0 m-2"
+        role="alert" aria-live="polite" aria-atomic="true">
         <div class="d-flex">
             <div class="toast-body">
 

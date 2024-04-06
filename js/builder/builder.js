@@ -323,3 +323,16 @@ class Builder {
         this.placeSubjects(columns, rootObject, subjects);
     }
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('applyChangesBtn').addEventListener('click', function() {
+        cfg.image.maxNodesOnSameLine = parseInt(document.getElementById('maxNodesOnSameLine').value);
+        cfg.image.vSpacing = parseInt(document.getElementById('vSpacing').value);
+        cfg.image.hSpacing = parseInt(document.getElementById('hSpacing').value);
+        cfg.image.leftMargin = parseInt(document.getElementById('leftMargin').value);
+        cfg.image.rightMargin = parseInt(document.getElementById('rightMargin').value);
+
+        showSuccessNotification("Настройки применены");
+        build();
+    });
+});
