@@ -307,7 +307,6 @@ class Builder {
     draw(rootId) {
         this.canvas.clear();
 
-        console.log(rootId, this.tree)
         const rootNode = this.tree.get(rootId);
         if (rootNode.children.size == 0) {
             const subject = this.newSubjectNode(rootNode);

@@ -223,10 +223,8 @@ function addLevel(parentId) {
 
 function deleteById(id) {
     const element = data.get(id);
-    for (let child of data.values()) {
-        if (child.father == id) {
-            deleteById(child.id);
-        }
+    for (const childId of element.children) {
+        deleteById(childId);
     }
     data.delete(id);
 }
@@ -240,9 +238,10 @@ function deleteLevel(id) {
     let current = data.get(id);
     let parent = data.get(current.father);
     parent.children.delete(id);
-    for (let node of data.values()) {
-        if (node.father == current.father && node.index >= current.index) {
-            --node.index;
+    for (let childId of parent.children) {
+        const child = data.get(childId);
+        if (child.index >= current.index) {
+            --child.index;
         }
     };
     deleteById(id);
