@@ -47,13 +47,13 @@ function loadConfig() {
 function build() {
     loadConfig();
     let builder = new Builder("canvas", data);
-    builder.draw(data.find((e) => e.selected).id);
+    builder.draw(data.values().find((e) => e.selected).id);
 }
 
 class Builder {
     constructor(canvasId, data) {
         this.canvas = new fabric.StaticCanvas(canvasId);
-        this.tree = prepareDataTree(data);
+        this.tree = data;
         this.connections = new Map();
 
         this.canvas.on("object:moving", this.onObjectMove);
@@ -107,7 +107,7 @@ class Builder {
         ], {stroke: "black"});
 
         // Top section
-        const nameSection = new fabric.Textbox(`${outerIndex}\n${node.name}`, {
+        const nameSection = new fabric.Textbox(`${outerIndex}\n${node.text_1}`, {
             left: vertLineX+1, top: horLineY-cfg.top.height,
             stroke: "black", strokeWidth: 0,
             width: cfg.description.width, fontSize: cfg.top.height * 0.3,
@@ -136,7 +136,7 @@ class Builder {
         return new fabric.Group([
             this.newBottomRect(0, 0, index, "yellow"),
             newText(
-                `u${index} ${node.name}`,
+                `u${index} ${node.text_1}`,
                 {x: cfg.bottom.width * 0.5, origin: "center"},
                 {y: cfg.bottom.height,       origin: "top"},
                 cfg.bottom.height*0.35, cfg.bottom.width - 4 * cfg.arrow.thickness,
@@ -311,7 +311,7 @@ class Builder {
         const rootObject = this.newObjectNode(rootNode);
         const subjects = Array.from(this.tree
             .values()
-            .filter((node) => node.parent == rootId)
+            .filter((node) => node.father == rootId)
         , (child) => (child.isLeaf() ? this.newSubjectNode(child) : this.newObjectNode(child)));
         const columns = this.resizeCanvasToFit(rootObject, subjects);
 
