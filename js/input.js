@@ -39,7 +39,7 @@ function getCurrentSelected() {
     return data.values().find((e) => e.selected).id;
 }
 
-function loadAll() {
+function downloadAll() {
     const currentTime = getCurrentTimeString();
     for (const [id, node] of data.entries()) {
         if (node.children.size == 0) continue;
@@ -48,10 +48,24 @@ function loadAll() {
         const link = document.createElement('a');
         link.download = `rcd_${currentTime}_${node.text_1}.png`;
         builder.canvas.renderAll();
-        link.href = builder.canvas.toDataURL({format: "png"});
+        link.href = builder.canvas.toDataURL({
+            format: "png"
+        });
         link.click();
         URL.revokeObjectURL(link.href)
     }
+}
+
+function downloadOne() {
+    const currentNode = data.get(getCurrentSelected());
+    const link = document.createElement('a');
+    link.download = `rcd_${getCurrentTimeString()}_${currentNode.text_1}.png`;
+    builder.canvas.renderAll();
+    link.href = builder.canvas.toDataURL({
+        format: "png"
+    });
+    link.click();
+    URL.revokeObjectURL(link.href)
 }
 
 function getNodeElement(node) {
@@ -234,7 +248,7 @@ function deleteLevel(id) {
         alert("Невозможно удалить корневой элемент");
         return
     }
-    
+
     let current = data.get(id);
     let parent = data.get(current.father);
     parent.children.delete(id);

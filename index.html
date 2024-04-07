@@ -58,7 +58,8 @@
                     <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modal">
                         <i class="fa-solid fa-gear" style="margin-right: 10px;"></i>Настройки
                     </button>
-                    <button type="button" class="btn btn-success" onclick="loadAll()">Скачать изображения</button>
+                    <button type="button" class="btn btn-success" onclick="downloadAll()"><i class="fa-solid fa-download"
+                            style="margin-right: 10px;"></i>Скачать все изображения</button>
                 </div>
                 <div class="input-tree">
                     <div id="level-0" class="base-node card">
@@ -70,11 +71,16 @@
                 </div>
             </section>
 
-            <section class="px-1 mt-1 mb-5" id="output">
+            <section class="px-1 mt-1 mb-5 position-relative" id="output">
                 <div class="d-flex justify-content-center card" id="canvas-container">
                     <div class="d-flex justify-content-center">
                         <canvas id="canvas"></canvas>
                     </div>
+                </div>
+                <div class="fixed-circle-button">
+                    <button class="circle-download-button" onclick="downloadOne()">
+                        <i class="fas fa-download"></i>
+                    </button>
                 </div>
             </section>
         </div>
