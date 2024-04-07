@@ -272,8 +272,27 @@ function getCurrentTimeString() {
     return `${month}${day}_${hours}${minutes}`;
 }
 
+function mapToJson(map) {
+    const obj = {};
+    for (const [key, value] of map) {
+        obj[key] = value;
+        obj[key].children = [...value.children];
+    }
+    return JSON.stringify(obj);
+}
+
+function jsonToMap(jsonStr) {
+    const obj = JSON.parse(jsonStr);
+    const map = new Map();
+    for (const key in obj) {
+        obj[key].children = new Set(obj[key].children);
+        map.set(parseInt(key), obj[key]);
+    }
+    return map;
+}
+
 function download() {
-    let jsonText = JSON.stringify([...data]);
+    let jsonText = mapToJson(data);
     let a = document.createElement("a");
     let file = new Blob([jsonText], {
         type: "text/plain"
@@ -304,7 +323,7 @@ function restoreSave() {
         reader.onload = function (readerEvent) {
             try {
                 data.clear();
-                const loadedData = new Map(JSON.parse(readerEvent.target.result));
+                const loadedData = jsonToMap(readerEvent.target.result);
                 for (const [key, value] of loadedData) {
                     data.set(key, value);
                 }
