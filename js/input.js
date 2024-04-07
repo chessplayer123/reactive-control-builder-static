@@ -157,9 +157,11 @@ function createNode(node, borderLevel) {
     newDiv.classList.add(getBorderClass(borderLevel));
 
     let cardHeader = document.createElement('div');
-    cardHeader.classList.add("card-header")
+    cardHeader.classList.add("card-header", "d-flex", "flex-row", "justify-content-between");
     cardHeader.setAttribute('role', 'button');
-    cardHeader.textContent = node.text_1;
+    let innerText = "перейти на этот уровень";
+    if (borderLevel == 1) innerText = "перейти на уровень выше";
+    cardHeader.innerHTML = `<div id="name">${node.text_1}</div><div class="text-end text-primary small">${innerText}</div>`;
     newDiv.appendChild(cardHeader);
 
     let newNodeInput = document.createElement('div');
@@ -170,7 +172,7 @@ function createNode(node, borderLevel) {
     newInput.classList.add('form-control');
     newInput.addEventListener("input", (event) => {
         node.text_1 = event.target.value;
-        cardHeader.textContent = event.target.value;
+        cardHeader.querySelector("#name").textContent = event.target.value;
         myTree.refresh(data.values());
         builder.draw(getCurrentSelected());
     });
@@ -245,7 +247,7 @@ function deleteById(id) {
 
 function deleteLevel(id) {
     if (id == 1) {
-        alert("Невозможно удалить корневой элемент");
+        showErrorNotification("Невозможно удалить корневой элемент");
         return
     }
 
