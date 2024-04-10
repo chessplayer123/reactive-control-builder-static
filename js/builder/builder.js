@@ -43,6 +43,7 @@ class Builder {
         this.tree = data;
         this.connections = new Map();
         this.lines = [];
+        this.top_edge = 0;
 
         this.canvas.on("object:moving", (element) => this.onObjectMove(this, element));
         this.canvas.selection = false;
@@ -50,11 +51,18 @@ class Builder {
 
     onObjectMove(builder, element) {
         const connections = this.connections.get(element.target.id);
+        const target = element.target;
+        target.setPositionByOrigin({
+                x: Math.max(0, Math.min(target.left, builder.canvas.width - target.width)),
+                y: Math.max(builder.top_edge, Math.min(target.top, builder.canvas.height - target.height))
+            }, "left",  "top"
+        );
+
         if (connections == null) {
             return;
         }
         for (const con of connections.values()) {
-            const coords = (con.isInput ? builder.getInCoords(element.target) : builder.getOutCoords(element.target));
+            const coords = (con.isInput ? builder.getInCoords(target) : builder.getOutCoords(target));
             if (con.isEnd) {
                 builder.lines[con.i].set({
                     'x2': coords.x,
@@ -343,6 +351,7 @@ class Builder {
 
         const rootNode = this.tree.get(rootId);
         if (rootNode.children.size == 0) {
+            this.top_edge = 0;
             const subject = this.newSubjectNode(rootNode);
             subject.setPositionByOrigin({x: 0, y: 0}, "left", "top");
             this.canvas.add(subject);
@@ -363,6 +372,7 @@ class Builder {
             {x: this.canvas.width*0.5, y: cfg.image.vSpacing},
             "center", "top"
         );
+        this.top_edge = rootObject.top + rootObject.height;
         this.canvas.add(rootObject);
         this.placeSubjects(columns, rootObject, subjects);
         for (const line of this.lines) {
