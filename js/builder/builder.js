@@ -191,7 +191,7 @@ class Builder {
             };
         } else if (node.name == "subject") {
             return {
-                x: node.left+cfg.bottom.width-1.5*cfg.arrow.thickness,
+                x: node.getCenterPoint().x+cfg.bottom.width/2-1.5*cfg.arrow.thickness,
                 y: node.top
             };
         }
@@ -205,7 +205,7 @@ class Builder {
             };
         } else if (node.name == "subject") {
             return {
-                x: node.left+1.5*cfg.arrow.thickness,
+                x: node.getCenterPoint().x-cfg.bottom.width/2+1.5*cfg.arrow.thickness,
                 y: node.top
             };
         }
