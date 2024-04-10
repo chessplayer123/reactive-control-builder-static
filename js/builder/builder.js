@@ -260,10 +260,12 @@ class Builder {
         const inLine = new fabric.Line([srcInPoint.x, srcInPoint.y, dstOutPoint.x, dstOutPoint.y], {
             stroke: "green",
             selectable: false,
+            eventable: false,
         });
         const outLine = new fabric.Line([srcOutPoint.x, srcOutPoint.y, dstInPoint.x, dstInPoint.y], {
             stroke: "red",
             selectable: false,
+            eventable: false,
         });
 
         const inLineIdx = this.lines.push(inLine) - 1;
