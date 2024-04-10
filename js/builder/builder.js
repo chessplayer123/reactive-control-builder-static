@@ -1,4 +1,7 @@
 fabric.Object.prototype.lockRotation = true;
+fabric.Object.prototype.lockScaling = true;
+fabric.Object.prototype.lockScalingX = true;
+fabric.Object.prototype.lockScalingY = true;
 
 let cfg = loadDefaultConfig();
 
@@ -36,15 +39,34 @@ function loadDefaultConfig() {
 
 class Builder {
     constructor(canvasId, data) {
-        this.canvas = new fabric.StaticCanvas(canvasId);
+        this.canvas = new fabric.Canvas(canvasId);
         this.tree = data;
         this.connections = new Map();
+        this.lines = [];
 
-        this.canvas.on("object:moving", this.onObjectMove);
+        this.canvas.on("object:moving", (element) => this.onObjectMove(this, element));
+        this.canvas.selection = false;
     }
 
-    onObjectMove(element) {
-        // TODO: update connections
+    onObjectMove(builder, element) {
+        const connections = this.connections.get(element.target.id);
+        if (connections == null) {
+            return;
+        }
+        for (const con of connections.values()) {
+            const coords = (con.isInput ? builder.getInCoords(element.target) : builder.getOutCoords(element.target));
+            if (con.isEnd) {
+                builder.lines[con.i].set({
+                    'x2': coords.x,
+                    'y2': coords.y
+                });
+            } else {
+                builder.lines[con.i].set({
+                    'x1': coords.x,
+                    'y1': coords.y
+                });
+            }
+        }
     }
 
     newBottomRect(left, top, index, fillColor="white") {
@@ -78,7 +100,7 @@ class Builder {
 
     newDescriptionSection(vertLineX, horLineY, node) {
         const globalIndex = cfg.abc.charAt(Math.max(0, node.depth-1)) + this.getGlobalIndex(node);
-        const outerIndex = (node.father == null ? "P" : "u") + globalIndex;
+        const outerIndex = (node.father == null ? "Р" : "И") + globalIndex;
 
         // Top section
         const nameSection = new fabric.Textbox(`${outerIndex}\n${node.text_1}`, {
@@ -134,6 +156,7 @@ class Builder {
                 1, 1 + index.length
             )], {
                 name: "subject",
+                id: node.id
             }
         );
     }
@@ -180,6 +203,7 @@ class Builder {
 
         return new fabric.Group([outArrow, inArrow, topRect, name, bottomRect, description], {
             name: "object",
+            id: node.id
         });
     }
 
@@ -233,8 +257,20 @@ class Builder {
             stroke: "red",
             selectable: false,
         });
-        this.canvas.add(inLine);
-        this.canvas.add(outLine);
+
+        const inLineIdx = this.lines.push(inLine) - 1;
+        const outLineIdx = this.lines.push(outLine) - 1;
+
+        if (!this.connections.has(dst.id)) {
+            this.connections.set(dst.id, []);
+        }
+        if (!this.connections.has(src.id)) {
+            this.connections.set(src.id, []);
+        }
+        this.connections.get(dst.id).push({i: inLineIdx, isEnd: true, isInput: false});
+        this.connections.get(dst.id).push({i: outLineIdx, isEnd: true, isInput: true});
+        this.connections.get(src.id).push({i: inLineIdx, isEnd: false, isInput: false});
+        this.connections.get(src.id).push({i: outLineIdx, isEnd: false, isInput: true});
     }
 
     resizeCanvasToFit(root, subjects) {
@@ -296,8 +332,14 @@ class Builder {
         return `${parentGlobalIndex}${currentNode.index}`;
     }
 
-    draw(rootId) {
+    clear() {
         this.canvas.clear();
+        this.lines = [];
+        this.connections = new Map();
+    }
+
+    draw(rootId) {
+        this.clear();
 
         const rootNode = this.tree.get(rootId);
         if (rootNode.children.size == 0) {
@@ -310,6 +352,7 @@ class Builder {
         }
 
         const rootObject = this.newObjectNode(rootNode);
+        rootObject.lockMovementX = rootObject.lockMovementY = true;
         const subjects = Array.from(this.tree
             .values()
             .filter((node) => node.father == rootId)
@@ -322,6 +365,9 @@ class Builder {
         );
         this.canvas.add(rootObject);
         this.placeSubjects(columns, rootObject, subjects);
+        for (const line of this.lines) {
+            this.canvas.add(line);
+        }
     }
 }
 
