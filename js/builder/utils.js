@@ -5,7 +5,9 @@ function newText(text, left, top, fontSize, maxWidth, subscriptStart, subscriptE
         fontSize: fontSize, subscript: {"size": 0.6},
     });
     textObject.setSubscript(subscriptStart, subscriptEnd || text.length);
-    textObject.scaleX = Math.min(1.0, maxWidth / textObject.width);
+    if (maxWidth) {
+        textObject.scaleX = Math.min(1.0, maxWidth / textObject.width);
+    }
     return textObject;
 }
 

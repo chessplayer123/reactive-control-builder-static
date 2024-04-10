@@ -123,14 +123,14 @@ class Builder {
     }
 
     newSubjectNode(node) {
-        const index = cfg.abc.charAt(node.depth-1) + this.getGlobalIndex(node);
+        const index = `${cfg.abc.charAt(Math.max(0, node.depth-1))}${this.getGlobalIndex(node)}`;
         return new fabric.Group([
             this.newBottomRect(0, 0, index, "yellow"),
             newText(
                 `u${index} ${node.text_1}`,
                 {x: cfg.bottom.width * 0.5, origin: "center"},
                 {y: cfg.bottom.height,      origin: "top"},
-                cfg.bottom.height*0.35, cfg.bottom.width - 4 * cfg.arrow.thickness,
+                cfg.bottom.height*0.35, null,
                 1, 1 + index.length
             )], {
                 name: "subject",
