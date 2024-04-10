@@ -158,7 +158,7 @@ class Builder {
             `Y${innerIndex}`
         );
         const name = newText(
-            `МО${innerIndex}`,
+            `МУ${innerIndex}`,
             {x: topRect.getCenterPoint().x, origin: "center"},
             {y: topRect.getCenterPoint().y, origin: "center"},
             topRect.height*0.5, cfg.bottom.width - 4 * cfg.arrow.thickness,
