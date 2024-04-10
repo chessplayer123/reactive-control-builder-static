@@ -186,7 +186,7 @@ class Builder {
     getInCoords(node) {
         if (node.name == "object") {
             return {
-                x: node.left+cfg.top.outerArrowsWidth,
+                x: node.left,
                 y: node.top+cfg.top.height*0.5
             };
         } else if (node.name == "subject") {
