@@ -116,7 +116,7 @@ class Builder {
         let children = []
         let i = 1;
         for (const child of node.children) {
-            children.push(`u${globalIndex}${i++}` + (this.tree.get(child).children.size == 0 ? '-' : '+'));
+            children.push(`и${globalIndex}${i++}` + (this.tree.get(child).children.size == 0 ? '-' : '+'));
         }
         const childrenSection = new fabric.Textbox(children.join("\n"), {
             left: vertLineX+1, top: horLineY,
@@ -149,7 +149,7 @@ class Builder {
         return new fabric.Group([
             this.newBottomRect(0, 0, index, "yellow"),
             newText(
-                `u${index} ${node.text_1}`,
+                `и${index} ${node.text_1}`,
                 {x: cfg.bottom.width * 0.5, origin: "center"},
                 {y: cfg.bottom.height,      origin: "top"},
                 cfg.bottom.height*0.35, null,
