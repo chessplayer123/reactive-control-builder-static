@@ -16,6 +16,7 @@ function loadDefaultConfig() {
         },
         description: {
             width: 200,
+            marginLeft: 3
         },
         image: {
             maxNodesOnSameLine: 2,
@@ -24,7 +25,7 @@ function loadDefaultConfig() {
             leftMargin: 10,
             rightMargin: 10,
         },
-        abc: "ijklmnoprstqwe"
+        abc: "ijklmnoprstqwe",
     };
     cfg.top.height = cfg.top.width * 0.4;
     cfg.bottom = {
@@ -112,7 +113,7 @@ class Builder {
 
         // Top section
         const nameSection = new fabric.Textbox(`${outerIndex}\n${node.text_1}`, {
-            left: vertLineX+1, top: horLineY-cfg.top.height,
+            left: vertLineX+cfg.description.marginLeft, top: horLineY-cfg.top.height,
             stroke: "black", strokeWidth: 0,
             width: cfg.description.width, fontSize: cfg.top.height * 0.3,
         });
@@ -127,7 +128,7 @@ class Builder {
             children.push(`и${globalIndex}${i++}` + (this.tree.get(child).children.size == 0 ? '-' : '+'));
         }
         const childrenSection = new fabric.Textbox(children.join("\n"), {
-            left: vertLineX+1, top: horLineY,
+            left: vertLineX+cfg.description.marginLeft, top: horLineY,
             stroke: "black", strokeWidth: 0,
             fontSize: cfg.top.height * 0.3,
             width: cfg.description.width,
